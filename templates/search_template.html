@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+{% for song in songs %}
+{% if song.preview_url %}
+<img onclick='playAudio("{{ song.preview_url }}")' width='80px' height='80px' src='{{ song.album.images.0.url }}'><br>
+{% else %}
+<img title='No Preview Audio' width='80px' height='80px' src='{{ song.album.images.0.url }}'><br>
+{% endif %}
+{{ song.name }}<img src='{% static "Music/images/Play.png" %}' height='20px' width='20px' title='Play'>
+<img src='{% static "Music/images/Playlist.png" %}' height='20px' width='20px' title='Add to playlist'>
+<img src='{% static "Music/images/Queue.png" %}' height='20px' width='20px' title='Queue'>
+<br>
+{% endfor %}
+
+{% endblock content %}

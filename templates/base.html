@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .account_button{
+                float:right;
+                background-color:white;
+                border-color:black;
+                text-align:center;
+                padding:10px 24px;
+                border-radius: 10px;
+            }
+
+        </style>
+
+        <script>
+            var audio;
+            var source_playing;
+
+            function playAudio(source){
+                if(source == "None"){
+                    alert("works")
+                }
+                if(audio == null){
+                    source_playing = source;
+                    audio = new Audio(source);
+                    audio.play();
+                }  else if(source_playing != source){
+                    audio.pause();
+                    source_playing = source;
+                    audio = new Audio(source);
+                    audio.play();
+                } else if(!audio.paused){
+                    audio.pause();
+                } else if(audio.paused){
+                    audio.play();
+                }
+            }
+
+        </script>
+    </head>
+    <body>
+        {% if not request.user.is_authenticated %}
+        <h1>Hello!</h1>
+        <a href = '/login'><button class='account_button'>Login</button></a><a href='/signup'><button class='account_button'>Sign Up</button></a>
+        {% else %}
+        <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a>
+        {% endif %}
+
+        <form method='GET' action='/search'>
+            <input type='text' name='query' placeholder='Search Songs'>
+            <input type='submit' value='Search'>
+        </form>
+        <br>
+        {% block content %}
+        {% endblock content %}
+
+    </body>
+</html>
