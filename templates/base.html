@@ -3,6 +3,7 @@
     <head>
         <style>
             .account_button{
+                position:relative;
                 float:right;
                 background-color:white;
                 border-color:black;
@@ -10,7 +11,19 @@
                 padding:10px 24px;
                 border-radius: 10px;
             }
-
+            
+            #friends_list{
+                left: 150px;
+                top: 40px;
+                overflow-y: auto;
+                position: relative;
+                border-style: solid;
+                border-width: 2px;
+                border-color: black;
+                float:right;
+                height: 375px;
+                width: 200px;
+            }
         </style>
 
         <script>
@@ -41,17 +54,21 @@
     </head>
     <body>
         {% if not request.user.is_authenticated %}
-        <h1>Hello!</h1>
-        <a href = '/login'><button class='account_button'>Login</button></a><a href='/signup'><button class='account_button'>Sign Up</button></a>
+        <h1>Hello!</h1><a href = '/login'><button class='account_button'>Login</button></a><a href='/signup'><button class='account_button'>Sign Up</button></a>
         {% else %}
-        <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a>
-        {% endif %}
-
+        <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a><button class='account_button' onclick='showFriends()'>Friends</button>
+        <div name='friends_list' id='friends_list'>
+            {% for friend in request.user.friends.all %}
+            {{ friend }}
+            {% endfor %}
+        </div>
         <form method='GET' action='/search'>
             <input type='text' name='query' placeholder='Search Songs'>
             <input type='submit' value='Search'>
         </form>
         <br>
+        {% endif %}
+
         {% block content %}
         {% endblock content %}
 
