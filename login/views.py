@@ -1,5 +1,5 @@
 from .forms import UsersCreationForm, UsersChangeForm
-from .models import Users
+from .models import Users, FriendProfile
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 import spotipy.oauth2 as oauth2
@@ -39,6 +39,7 @@ def signup_view(request):
     }
     if form.is_valid():
         user_obj = form.save()
+        profile = FriendProfile.objects.create(user=user_obj)
         login(request, user_obj)
         auth_manager = oauth2.SpotifyOAuth(client_id=cid, client_secret=secret, redirect_uri=redirect_uri, scope=scopes)
 

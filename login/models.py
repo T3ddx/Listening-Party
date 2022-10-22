@@ -19,4 +19,7 @@ class FriendProfile(models.Model):
         return self.user.username
 
     def get_friend_request(self):
-        return (self.friend_requests.to_request.username, self.friend_requests.from_request.username)
+        if self.friend_requests:
+            return (self.friend_requests.to_request.username, self.friend_requests.from_request.username)
+        else:
+            return "No Friend Requests"
