@@ -12,35 +12,42 @@ scopes = 'user-read-playback-state app-remote-control user-modify-playback-state
 
 # Create your views here.
 
+#logs a user in
 def login_view(request):
     if request.method == "POST":
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user:
+            #logs user in if they exist
             login(request, user)
             return redirect('/')
         else:
+            #sends an error if the user doesn't exist
             context = {
                 'error' : 'Incorrect Username or Password'
             }
             return render(request, 'accounts/login_template.html', context)
     return render(request, 'accounts/login_template.html', {})
 
+#logs a user out
 def logout_view(request):
     if request.method == 'POST':
         logout(request)
         return redirect('/')
     return render(request, 'accounts/logout_template.html', {})
 
+#signs a user up using the UsersCreationForm
 def signup_view(request):
-    
     form = UsersCreationForm(request.POST or None)
     context = {
         'form' : form
     }
     if form.is_valid():
+        #creates a friend profile for the user and saves them
         user_obj = form.save()
         profile = FriendProfile.objects.create(user=user_obj)
+        profile.save()
         login(request, user_obj)
+        #sents user to be authenticated on Spotify
         auth_manager = oauth2.SpotifyOAuth(client_id=cid, client_secret=secret, redirect_uri=redirect_uri, scope=scopes)
 
         redirect_url = auth_manager.get_authorize_url()

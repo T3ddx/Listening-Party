@@ -2,6 +2,12 @@
 <html>
     <head>
         <style>
+            .friend_list_buttons{
+                float:right;
+                border-radius: 50%;
+                border:none;
+            }
+
             .account_button{
                 position:relative;
                 float:right;
@@ -13,6 +19,7 @@
             }
             
             #friends_list{
+                display:none;
                 left: 150px;
                 top: 40px;
                 overflow-y: auto;
@@ -31,9 +38,6 @@
             var source_playing;
 
             function playAudio(source){
-                if(source == "None"){
-                    alert("works")
-                }
                 if(audio == null){
                     source_playing = source;
                     audio = new Audio(source);
@@ -50,17 +54,45 @@
                 }
             }
 
+            function showFriends(){
+                if(document.getElementById('friends_list').style.display == ""){
+                    document.getElementById('friends_list').style.display = "initial";
+                } else {
+                    document.getElementById('friends_list').style.display = "";
+                }
+            }
         </script>
     </head>
     <body>
         {% if not request.user.is_authenticated %}
-        <h1>Hello!</h1><a href = '/login'><button class='account_button'>Login</button></a><a href='/signup'><button class='account_button'>Sign Up</button></a>
+        <h1>Hello!</h1><a href='/signup'><button class='account_button'>Sign Up</button></a><a href = '/login'><button class='account_button'>Login</button></a>
         {% else %}
         <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a><button class='account_button' onclick='showFriends()'>Friends</button>
         <div name='friends_list' id='friends_list'>
-            {% for friend in request.user.friends.all %}
-            {{ friend }}
+            {% if FriendProfile.friends.all.count is 0 %}
+            No Friends<br>
+            {% else %}
+            Friends:<br>
+            {% for user in FriendProfile.friends.all %}
+            {{ user }}<br>
             {% endfor %}
+            {% endif %}
+            {% if FriendProfile.friend_requests.all.count is not 0 %}
+            Friend Requests:<br>
+            {% for request in FriendProfile.get_to_requests %}
+            <form method='post'>
+            {% csrf_token %}
+            {{ request.from_request }}<button class='friend_list_buttons' type='submit' name='accept' value='{{ request.from_request }}'>accept</button><br>
+            </form>
+            {% endfor %}
+            Sent Requests:<br>
+            {% for request in FriendProfile.get_sent_requests %}
+            <form method='post'>
+            {% csrf_token %}
+            {{ request.to_request }}<button class='friend_list_buttons' type='input' name='cancel' value='{{ request.to_request }}'>cancel</button><br>
+            </form>
+            {% endfor %}
+            {% endif %}
         </div>
         <form method='GET' action='/search'>
             <input type='text' name='query' placeholder='Search Songs'>

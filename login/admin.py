@@ -19,14 +19,18 @@ class FriendRequestAdmin(admin.ModelAdmin):
 class FriendsInline(admin.TabularInline):
     model = FriendProfile.friends.through
 
+class RequestsInline(admin.TabularInline):
+    model = FriendProfile.friend_requests.through
+
 class FriendProfileAdmin(admin.ModelAdmin):
     model = FriendProfile
 
     inlines = [
-        FriendsInline
+        FriendsInline,
+        RequestsInline
     ]
 
-    list_display = ["user", "get_friend_request"]
+    list_display = ["user"]
 
 admin.site.register(Users, UsersAdmin)
 admin.site.register(FriendRequest, FriendRequestAdmin)

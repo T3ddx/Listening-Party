@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import spotipy.oauth2 as oauth2
 from spotipy.cache_handler import CacheFileHandler
+from login.models import FriendProfile, FriendRequest, Users
 
 cid = '7f38ef08e82a41f793d5438b9910bf1d'
 secret = '7cf5464267914ed9aeaca934810079dc'
@@ -11,9 +12,35 @@ scopes = 'user-read-playback-state app-remote-control user-modify-playback-state
 # Create your views here.
 
 def home_view(request):
-    if request.GET.get('code'):
-        auth_manager = oauth2.SpotifyOAuth(client_id=cid, client_secret=secret, scope=scopes, redirect_uri=redirect_uri, cache_handler=CacheFileHandler(username=request.user.username))
+    context = {}
+    if request.method == 'GET':
+        if request.GET.get('code'):
+            #authorizes a user to use Spotify
+            auth_manager = oauth2.SpotifyOAuth(client_id=cid, client_secret=secret, scope=scopes, redirect_uri=redirect_uri, cache_handler=CacheFileHandler(username=request.user.username))
+            auth_manager.get_access_token(request.GET.get('code'))
+            return redirect('/')
+        if request.user.is_authenticated:
+            #adds a users friend profile to the context to be used in the template
+            context["FriendProfile"] = FriendProfile.objects.get(user=request.user)
+        return render(request, 'home_template.html', context)
+    else:
+        if request.POST.get('accept'):
+            #adds a friend to two users friend profiles and deletes the friend request
+            accepting = FriendRequest.objects.get(to_request=request.user, from_request=Users.objects.get(username=request.POST.get('accept')))
 
-        auth_manager.get_access_token(request.GET.get('code'))
-        return redirect('/')
-    return render(request, 'home_template.html')
+            profile = FriendProfile.objects.get(user=request.user)
+            profile.friends.add(accepting.from_request)
+            profile.save()
+
+            profile2 = FriendProfile.objects.get(user=accepting.from_request)
+            profile2.friends.add(request.user)
+            profile2.save()
+            
+            accepting.delete()
+        elif request.POST.get('cancel'):
+            #deletes a friend request
+            canceling = FriendRequest.objects.get(to_request=Users.objects.get(username=request.POST.get('cancel')), from_request=request.user)
+            canceling.delete()
+        if request.user.is_authenticated:
+            context["FriendProfile"] = FriendProfile.objects.get(user=request.user)
+        return render(request, 'home_template.html', context)
