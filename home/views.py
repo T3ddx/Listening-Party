@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
 import spotipy.oauth2 as oauth2
 from spotipy.cache_handler import CacheFileHandler
 from login.models import FriendProfile, FriendRequest, Users
@@ -22,10 +23,13 @@ def home_view(request):
         if request.user.is_authenticated:
             #adds a users friend profile to the context to be used in the template
             context["FriendProfile"] = FriendProfile.objects.get(user=request.user)
+        context['in_friends'] = False
         return render(request, 'home_template.html', context)
     else:
         if request.POST.get('accept'):
             #adds a friend to two users friend profiles and deletes the friend request
+            #and tells the template that the user is accessing the friends interface
+            context['in_friends'] = True
             accepting = FriendRequest.objects.get(to_request=request.user, from_request=Users.objects.get(username=request.POST.get('accept')))
 
             profile = FriendProfile.objects.get(user=request.user)
@@ -35,12 +39,20 @@ def home_view(request):
             profile2 = FriendProfile.objects.get(user=accepting.from_request)
             profile2.friends.add(request.user)
             profile2.save()
-            
+
             accepting.delete()
+            context['in_friends'] = 'initial'
         elif request.POST.get('cancel'):
+            context['in_friends'] = True
             #deletes a friend request
             canceling = FriendRequest.objects.get(to_request=Users.objects.get(username=request.POST.get('cancel')), from_request=request.user)
             canceling.delete()
+        elif request.POST.get('send_request'):
+            context['in_friends'] = True
+            try:
+                user = Users.objects.get(username=request.POST.get('send_request'))
+            except ObjectDoesNotExist:
+                context["cant_find_user"] = True
         if request.user.is_authenticated:
             context["FriendProfile"] = FriendProfile.objects.get(user=request.user)
         return render(request, 'home_template.html', context)

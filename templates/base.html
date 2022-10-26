@@ -8,6 +8,11 @@
                 border:none;
             }
 
+            .friends_buttons{
+                width: 66.5px;
+
+            }
+
             .account_button{
                 position:relative;
                 float:right;
@@ -55,10 +60,10 @@
             }
 
             function showFriends(){
-                if(document.getElementById('friends_list').style.display == ""){
+                if(document.getElementById('friends_list').style.display == "none"){
                     document.getElementById('friends_list').style.display = "initial";
                 } else {
-                    document.getElementById('friends_list').style.display = "";
+                    document.getElementById('friends_list').style.display = "none";
                 }
             }
         </script>
@@ -68,7 +73,7 @@
         <h1>Hello!</h1><a href='/signup'><button class='account_button'>Sign Up</button></a><a href = '/login'><button class='account_button'>Login</button></a>
         {% else %}
         <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a><button class='account_button' onclick='showFriends()'>Friends</button>
-        <div name='friends_list' id='friends_list'>
+        <div {% if in_friends %} style='display:initial;' {% else %} style='display:none;' {% endif %} name='friends_list' id='friends_list'>
             {% if FriendProfile.friends.all.count is 0 %}
             No Friends<br>
             {% else %}
@@ -77,21 +82,34 @@
             {{ user }}<br>
             {% endfor %}
             {% endif %}
-            {% if FriendProfile.friend_requests.all.count is not 0 %}
+
+            {% if FriendProfile.get_to_requests.count is not 0 %}
             Friend Requests:<br>
             {% for request in FriendProfile.get_to_requests %}
             <form method='post'>
-            {% csrf_token %}
-            {{ request.from_request }}<button class='friend_list_buttons' type='submit' name='accept' value='{{ request.from_request }}'>accept</button><br>
+                {% csrf_token %}
+                {{ request.from_request }}<button class='friend_list_buttons' type='submit' name='accept' value='{{ request.from_request }}'>accept</button><br>
             </form>
             {% endfor %}
+            {% endif %}
+
+            {% if FriendProfile.get_sent_requests.count is not 0 %}
             Sent Requests:<br>
             {% for request in FriendProfile.get_sent_requests %}
             <form method='post'>
-            {% csrf_token %}
-            {{ request.to_request }}<button class='friend_list_buttons' type='input' name='cancel' value='{{ request.to_request }}'>cancel</button><br>
+                {% csrf_token %}
+                {{ request.to_request }}<button class='friend_list_buttons' type='input' name='cancel' value='{{ request.to_request }}'>cancel</button><br>
             </form>
             {% endfor %}
+            {% endif %}
+
+            <form action='' method='post'>
+                {% csrf_token %}
+                <input type='submit' value='Add Friend'>
+                <input type='text' name='send_request' placeholder='enter a username: '>
+            </form>
+            {% if cant_find_user %}
+            <p1 style='color:red;'>User does not exist</p1>
             {% endif %}
         </div>
         <form method='GET' action='/search'>
