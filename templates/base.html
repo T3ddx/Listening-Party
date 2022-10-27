@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
     <head>
         <style>
@@ -74,12 +75,15 @@
         {% else %}
         <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a><button class='account_button' onclick='showFriends()'>Friends</button>
         <div {% if in_friends %} style='display:initial;' {% else %} style='display:none;' {% endif %} name='friends_list' id='friends_list'>
-            {% if FriendProfile.friends.all.count is 0 %}
+            {% if FriendProfile.friends.count is 0 %}
             No Friends<br>
             {% else %}
             Friends:<br>
             {% for user in FriendProfile.friends.all %}
-            {{ user }}<br>
+            <form action='' method='post'>
+                {% csrf_token %}
+                {{ user }}<button type='submit' name='delete' value='{{ user }}' class='friend_list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button><br>
+            </form>
             {% endfor %}
             {% endif %}
 
@@ -110,6 +114,12 @@
             </form>
             {% if cant_find_user %}
             <p1 style='color:red;'>User does not exist</p1>
+            {% endif %}
+            {% if already_friends %}
+            <p1 style='color:red;'>Already friends with user</p1>
+            {% endif %}
+            {% if already_sent_request %}
+            <p1 style='color:red;'>Already sent a friend request to user</p1>
             {% endif %}
         </div>
         <form method='GET' action='/search'>
