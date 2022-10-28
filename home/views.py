@@ -15,20 +15,19 @@ scopes = 'user-read-playback-state app-remote-control user-modify-playback-state
 
 def home_view(request):
     context = {}
+    if request.user.is_authenticated:
+            #adds a users friend profile to the context to be used in the template
+            friend_profile = FriendProfile.objects.get(user=request.user)
+            context["FriendProfile"] = friend_profile
     if request.method == 'GET':
         if request.GET.get('code'):
             #authorizes a user to use Spotify
             auth_manager = oauth2.SpotifyOAuth(client_id=cid, client_secret=secret, scope=scopes, redirect_uri=redirect_uri, cache_handler=CacheFileHandler(username=request.user.username))
             auth_manager.get_access_token(request.GET.get('code'))
             return redirect('/')
-        if request.user.is_authenticated:
-            #adds a users friend profile to the context to be used in the template
-            context["FriendProfile"] = FriendProfile.objects.get(user=request.user)
         context['in_friends'] = False
         return render(request, 'home_template.html', context)
     else:
-        if request.user.is_authenticated:
-            context["FriendProfile"] = FriendProfile.objects.get(user=request.user)
         context['in_friends'] = True
         if request.POST.get('accept'):
             #adds a friend to two users friend profiles and deletes the friend request

@@ -18,6 +18,8 @@ def login_view(request):
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user:
             #logs user in if they exist
+            user.logged_in = True
+            user.save()
             login(request, user)
             return redirect('/')
         else:
@@ -31,6 +33,7 @@ def login_view(request):
 #logs a user out
 def logout_view(request):
     if request.method == 'POST':
+        request.user.logged_in = False
         logout(request)
         return redirect('/')
     return render(request, 'accounts/logout_template.html', {})
@@ -47,6 +50,7 @@ def signup_view(request):
         profile = FriendProfile.objects.create(user=user_obj)
         profile.save()
         login(request, user_obj)
+        user_obj.logged_in = True
         #sents user to be authenticated on Spotify
         auth_manager = oauth2.SpotifyOAuth(client_id=cid, client_secret=secret, redirect_uri=redirect_uri, scope=scopes)
 

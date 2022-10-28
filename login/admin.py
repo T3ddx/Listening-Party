@@ -9,7 +9,7 @@ class UsersAdmin(UserAdmin):
     add_form = UsersCreationForm
     form = UsersChangeForm
     model = Users
-    list_display = ["email", "username"]
+    list_display = ['email', 'username']
 
 class FriendRequestAdmin(admin.ModelAdmin):
     model = FriendRequest
