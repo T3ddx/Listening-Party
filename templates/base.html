@@ -38,7 +38,7 @@
                 width: 200px;
             }
         </style>
-
+        <script type='text/javascript' src='{% static "jQuery/jquery-3.6.1.js" %}'></script>
         <script>
             var audio;
             var source_playing;
@@ -66,6 +66,12 @@
                 } else {
                     document.getElementById('friends_list').style.display = "none";
                 }
+            }
+
+            function createParty(){
+                var input = $("#party_name");
+                console.log(input.val())
+                window.location.pathname = input.val();
             }
         </script>
     </head>
@@ -127,8 +133,10 @@
             <input type='submit' value='Search'>
         </form>
         <br>
-        {% endif %}
 
+        <input id='party_name' type='text' placeholder='enter party name'>
+        <button onclick='createParty()'>party</button><br>
+        {% endif %}
         {% block content %}
         {% endblock content %}
 

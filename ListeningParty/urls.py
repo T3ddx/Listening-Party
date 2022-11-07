@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
-from django.urls import path, include
+from django.urls import path, re_path, include
 from home.views import home_view
 from login.views import login_view, logout_view, signup_view
 from search.views import search_view
+from party.views import party_view
 
 urlpatterns = [
     path('', home_view),
@@ -27,5 +28,6 @@ urlpatterns = [
     path('login/', login_view),
     path('logout/', logout_view),
     path('search/', search_view),
-    path('signup/', signup_view)
+    path('signup/', signup_view),
+    re_path(r'^(?P<party_name>\w+)$', party_view),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
