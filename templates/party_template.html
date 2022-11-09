@@ -2,7 +2,10 @@
 
 {% block content %}
 Welcome to {{ party_name }}
-
+<form method='GET' action='/search'>
+    <input type='text' name='query' placeholder='Search Songs'>
+    <input type='submit' value='Search'>
+</form>
 
 <script>
 //websocket js

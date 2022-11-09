@@ -2,85 +2,26 @@
 {% load static %}
 <html>
     <head>
-        <style>
-            .friend_list_buttons{
-                float:right;
-                border-radius: 50%;
-                border:none;
-            }
-
-            .friends_buttons{
-                width: 66.5px;
-
-            }
-
-            .account_button{
-                position:relative;
-                float:right;
-                background-color:white;
-                border-color:black;
-                text-align:center;
-                padding:10px 24px;
-                border-radius: 10px;
-            }
-            
-            #friends_list{
-                display:none;
-                left: 150px;
-                top: 40px;
-                overflow-y: auto;
-                position: relative;
-                border-style: solid;
-                border-width: 2px;
-                border-color: black;
-                float:right;
-                height: 375px;
-                width: 200px;
-            }
-        </style>
-        <script type='text/javascript' src='{% static "jQuery/jquery-3.6.1.js" %}'></script>
-        <script>
-            var audio;
-            var source_playing;
-
-            function playAudio(source){
-                if(audio == null){
-                    source_playing = source;
-                    audio = new Audio(source);
-                    audio.play();
-                }  else if(source_playing != source){
-                    audio.pause();
-                    source_playing = source;
-                    audio = new Audio(source);
-                    audio.play();
-                } else if(!audio.paused){
-                    audio.pause();
-                } else if(audio.paused){
-                    audio.play();
-                }
-            }
-
-            function showFriends(){
-                if(document.getElementById('friends_list').style.display == "none"){
-                    document.getElementById('friends_list').style.display = "initial";
-                } else {
-                    document.getElementById('friends_list').style.display = "none";
-                }
-            }
-
-            function createParty(){
-                var input = $("#party_name");
-                console.log(input.val())
-                window.location.pathname = input.val();
-            }
-        </script>
     </head>
     <body>
         {% if not request.user.is_authenticated %}
         <h1>Hello!</h1><a href='/signup'><button class='account_button'>Sign Up</button></a><a href = '/login'><button class='account_button'>Login</button></a>
         {% else %}
-        <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a><button class='account_button' onclick='showFriends()'>Friends</button>
-        <div {% if in_friends %} style='display:initial;' {% else %} style='display:none;' {% endif %} name='friends_list' id='friends_list'>
+        <h1>Hello {{ request.user.username }}!</h1><a href='/logout'><button class='account_button'>Log Out</button></a><button class='account_button' onclick='friendButton()'>Friends</button><button class='account_button' onclick='partyButton()'>Party</button>
+
+        <div class='lists' id='party_list'>
+            Create a Party:
+            <input id='party_name' type='text' placeholder='enter party name'>
+            <button id='input_button' onclick='createParty()'>+</button><br>
+            {% if invites.count is not 0 %}
+            <br>Invites:<br>
+            {% for invite in invites %}
+            {{ invite.party_name }} | {{ invite.inviter }}<button class='list_buttons'>join</button>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div {% if in_friends %} style='display:initial;' {% else %} style='display:none;' {% endif %} class='lists' name='friends_list' id='friends_list'>
             {% if FriendProfile.friends.count is 0 %}
             No Friends<br>
             {% else %}
@@ -88,7 +29,7 @@
             {% for user in FriendProfile.friends.all %}
             <form action='' method='post'>
                 {% csrf_token %}
-                {{ user }}<button type='submit' name='delete' value='{{ user }}' class='friend_list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button><br>
+                {{ user }}<button type='submit' name='delete' value='{{ user }}' class='list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button><br>
             </form>
             {% endfor %}
             {% endif %}
@@ -115,8 +56,9 @@
 
             <form action='' method='post'>
                 {% csrf_token %}
-                <input type='submit' value='Add Friend'>
+                <br>Add friends:
                 <input type='text' name='send_request' placeholder='enter a username: '>
+                <input class='input_button' type='submit' value='+'>
             </form>
             {% if cant_find_user %}
             <p1 style='color:red;'>User does not exist</p1>
@@ -128,17 +70,13 @@
             <p1 style='color:red;'>Already sent a friend request to user</p1>
             {% endif %}
         </div>
-        <form method='GET' action='/search'>
-            <input type='text' name='query' placeholder='Search Songs'>
-            <input type='submit' value='Search'>
-        </form>
         <br>
-
-        <input id='party_name' type='text' placeholder='enter party name'>
-        <button onclick='createParty()'>party</button><br>
         {% endif %}
         {% block content %}
         {% endblock content %}
 
     </body>
+    <link rel='stylesheet' type='text/css' href='{% static "Base/style.css" %}'>
+    <script type='text/javascript' src='{% static "jQuery/jquery-3.6.1.js" %}'></script>
+    <script type='text/javascript' src='{% static "Base/functions.js" %}'></script>
 </html>

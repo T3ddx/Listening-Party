@@ -1,8 +1,13 @@
 from django.shortcuts import render
-from home.views import handling_friends
+from home.functions import handling_friends, friend_profile
+from .models import Party, Party_Invite
+from .functions import user_party_info
 # Create your views here.
 
 def party_view(request, party_name=None):
-    context = {'party_name' : party_name}
-    handling_friends(request, context)
+    if request.method == 'GET':
+        context = {'party_name' : party_name}
+        friend_profile(request, context)
+        handling_friends(request, context)
+        user_party_info(request,context)
     return render(request, "party_template.html", context)

@@ -1,0 +1,52 @@
+.list_buttons{
+    float:right;
+    border-radius: 40%;
+    border:none;
+    width:90px;
+    height:20px;
+    font-size: 17px;
+}
+
+.friends_buttons{
+    width: 66.5px;
+
+}
+
+.account_button{
+    position:relative;
+    float:right;
+    background-color:white;
+    border-color:black;
+    text-align:center;
+    padding:10px 24px;
+    border-radius: 10px;
+    bottom:60px;
+    width:400px;
+    font-size: 18px;
+}
+
+.lists{
+    display: none;
+    position:relative;
+    border-style: solid;
+    border-radius: 2px;
+    border-color: black;
+    overflow-y: scroll;
+    width:350px;
+    height:250px;
+    font-size:20px;
+}
+
+.input_button{
+    width: 30px;
+}
+
+#party_list{
+    left:188px;
+    bottom:60px;
+}
+
+#friends_list{
+    left:590px;
+    bottom:60px;
+}
