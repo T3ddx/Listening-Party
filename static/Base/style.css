@@ -1,3 +1,8 @@
+.btn_lists{
+    width:32%;
+    display:inline-block;
+}
+
 .list_buttons{
     float:right;
     border-radius: 40%;
@@ -9,44 +14,51 @@
 
 .friends_buttons{
     width: 66.5px;
-
 }
 
-.account_button{
+.logged_in_button{
     position:relative;
-    float:right;
     background-color:white;
     border-color:black;
     text-align:center;
     padding:10px 24px;
     border-radius: 10px;
-    bottom:60px;
-    width:400px;
+    bottom:20px;
+    width:100%;
+    font-size: 18px;
+}
+
+.logged_out_button{
+    position:relative;
+    background-color:white;
+    border-color:black;
+    text-align:center;
+    padding:10px 24px;
+    border-radius: 10px;
+    bottom:20px;
+    width:50%;
     font-size: 18px;
 }
 
 .lists{
     display: none;
-    position:relative;
+    margin-left: 3%;
+    width: 25%;
+    height:250px;
+    top: 103px;
+    position:absolute;
     border-style: solid;
     border-radius: 2px;
     border-color: black;
     overflow-y: scroll;
-    width:350px;
-    height:250px;
     font-size:20px;
+    background-color: white;
 }
 
 .input_button{
     width: 30px;
 }
 
-#party_list{
-    left:188px;
-    bottom:60px;
-}
-
-#friends_list{
-    left:590px;
-    bottom:60px;
+.error_message{
+    color:red;
 }

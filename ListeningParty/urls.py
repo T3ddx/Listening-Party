@@ -27,7 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login_view),
     path('logout/', logout_view),
-    path('search/', search_view),
+    re_path(r'^p/(?P<party_name>[\w.@+-0123456789]+)/search$', search_view),
     path('signup/', signup_view),
-    re_path(r"^p/(?P<party_name>[\w.@+-0123456789]+)$", party_view)
+    re_path(r'^p/(?P<party_name>[\w.@+-0123456789]+)$', party_view)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

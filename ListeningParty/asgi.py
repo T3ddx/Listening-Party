@@ -25,7 +25,8 @@ application = ProtocolTypeRouter({
     'websocket': AllowedHostsOriginValidator(
         AuthMiddlewareStack(
             URLRouter([
-                re_path(r"^p/(?P<username>\w+)$", ChatConsumer.as_asgi()),
+                re_path(r'^p/(?P<party_name>[\w.@+-0123456789]+)$', ChatConsumer.as_asgi()),
+                re_path(r'^p/(?P<party_name>[\w.@+-0123456789]+)/search$', ChatConsumer.as_asgi())
             ])
         )
     )
