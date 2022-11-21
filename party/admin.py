@@ -21,7 +21,7 @@ class PartyAdmin(admin.ModelAdmin):
         InviteInline
     ]
 
-    list_display = ['name']
+    list_display = ['name', 'party_leader']
 
 admin.site.register(Party, PartyAdmin)
 admin.site.register(Party_Invite, PartyInviteAdmin)

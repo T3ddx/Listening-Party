@@ -15,6 +15,7 @@ class Party_Invite(models.Model):
 
 class Party(models.Model):
     name = models.CharField(max_length=50)
+    party_leader = models.OneToOneField(Users, blank=True, null=True, on_delete=models.CASCADE, related_name='party_leader')
     users = models.ManyToManyField(Users, blank=True)
     invites = models.ManyToManyField(Party_Invite, blank=True)
 

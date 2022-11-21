@@ -14,5 +14,5 @@ def party_view(request, party_name=None):
         friend_profile(request, context)
         handling_friends(request, context)
         user_party_info(request,context)
-        create_party(request, party_name)
+        create_party(request, party_name, context)
     return render(request, "party_template.html", context)

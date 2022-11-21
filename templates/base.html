@@ -47,7 +47,7 @@
                     {% for request in FriendProfile.get_to_requests %}
                     <form method='post'>
                         {% csrf_token %}
-                        {{ request.from_request }}<button class='friend_list_buttons' type='submit' name='accept' value='{{ request.from_request }}'>accept</button><br>
+                        {{ request.from_request }}<button class='list_buttons' type='submit' name='accept' value='{{ request.from_request }}'>accept</button><br>
                     </form>
                     {% endfor %}
                     {% endif %}
@@ -57,7 +57,7 @@
                     {% for request in FriendProfile.get_sent_requests %}
                     <form method='post'>
                         {% csrf_token %}
-                        {{ request.to_request }}<button class='friend_list_buttons' type='input' name='cancel' value='{{ request.to_request }}'>cancel</button><br>
+                        {{ request.to_request }}<button class='list_buttons' type='input' name='cancel' value='{{ request.to_request }}'>cancel</button><br>
                     </form>
                     {% endfor %}
                     {% endif %}

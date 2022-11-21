@@ -20,7 +20,7 @@ var socket = new WebSocket(endpoint);
 
 socket.onmessage = function(e){
     console.log("message", e);
-    socket.send('{{ party_name }}')
+    socket.send("{{ party_name }}");
 };
 socket.onopen = function(e){
     console.log("open", e);
@@ -29,7 +29,8 @@ socket.onerror = function(e){
     console.log("error", e);
 };
 socket.onclose = function(e){
-    console.log("close", e);
+    socket.send("closing");
+    console.log("disconnect", e);
 };
 </script>
 {% endblock content%}
