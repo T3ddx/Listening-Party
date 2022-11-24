@@ -35,6 +35,7 @@ function friendButton(){
     
     clearPartyErrors();
     clearPartyInput();
+    clearFriendErrors();
 }
 
 function partyButton(){
@@ -54,6 +55,7 @@ function partyButton(){
 
     clearPartyErrors();
     clearPartyInput();
+    clearFriendErrors();
 }
 
 function createParty(){
@@ -99,6 +101,16 @@ function clearPartyErrors(){
     if(party_len_error.css("display") == "block"){
         party_len_error.css("display", "none");
     }
+}
+
+function clearFriendErrors(){
+    var user_does_not_exist = $("#user_does_not_exist");
+    var already_friends = $("#already_friends");
+    var already_sent = $("#already_sent");
+
+    user_does_not_exist.css("display", "none");
+    already_friends.css("display", "none");
+    already_sent.css("display", "none");
 }
 
 function clearPartyInput(){

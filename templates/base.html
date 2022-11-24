@@ -69,13 +69,13 @@
                         <input class='input_button' type='submit' value='+'>
                     </form>
                     {% if cant_find_user %}
-                    <p1 class='error_message' >User does not exist</p1>
+                    <p1 id='user_does_not_exist' class='error_message' >User does not exist</p1>
                     {% endif %}
                     {% if already_friends %}
-                    <p1 class='error_message' >Already friends with user</p1>
+                    <p1 id='already_friends' class='error_message' >Already friends with user</p1>
                     {% endif %}
                     {% if already_sent_request %}
-                    <p1 class='error_message' >Already sent a friend request to user</p1>
+                    <p1 id='already_sent' class='error_message' >Already sent a friend request to user</p1>
                     {% endif %}
                 </div>
             </div>
