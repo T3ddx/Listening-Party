@@ -1,6 +1,23 @@
 var audio;
 var source_playing;
 var invalid_url_symbols = ["%", "'", "\"", "?", "|", "\\", "-", "!", "#", "$", "^", "&", "*", "(", ")", "<", ">", ".", ";", ":", "=", "{", "[", "]", "}", "`", "~"];
+const party_form = document.getElementById("party_form");
+
+if(party_form){
+    party_form.addEventListener("submit", function(event){
+        clearPartyErrors();
+
+        party_name = $("#party_name").val();
+        
+        if(!checkURL(party_name)){
+            event.preventDefault();
+        }
+    });
+}
+
+function go_home(){
+    window.location = "../";
+}
 
 function playAudio(source){
     if(audio == null){
@@ -120,8 +137,8 @@ function clearPartyInput(){
     }
 }
 
-document.getElementById("party_list").addEventListener("keypress", function(e) {
+/*document.getElementById("party_list").addEventListener("keypress", function(e) {
     if(e.key == "Enter"){
         createParty();
     }
-});
+});*/

@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import spotipy.oauth2 as oauth2
 from spotipy.cache_handler import CacheFileHandler
 from .functions import friend_profile, handling_friends
-from party.functions import user_party_info
+from party.functions import user_invite_info
 
 cid = '7f38ef08e82a41f793d5438b9910bf1d'
 secret = '7cf5464267914ed9aeaca934810079dc'
@@ -15,7 +15,7 @@ def home_view(request):
     context = {}
 
     #gets user information regarding party invites and friends
-    user_party_info(request, context)
+    user_invite_info(request, context)
     friend_profile(request, context)
 
     if request.method == 'GET':

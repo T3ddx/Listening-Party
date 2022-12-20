@@ -2,6 +2,11 @@
 {% load static %}
 
 {% block content %}
+Welcome to {{ cleaned_party_name }}
+<form  method='GET' action='{{ party_name }}/search'>
+    <input type='text' name='query' placeholder='Search Songs'>
+    <input type='submit' value='Search'>
+</form>
 
 {% for song in songs %}
 {% if song.preview_url %}

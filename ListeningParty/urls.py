@@ -20,13 +20,14 @@ from django.urls import path, re_path, include
 from home.views import home_view
 from login.views import login_view, logout_view, signup_view
 from search.views import search_view
-from party.views import party_view
+from party.views import party_view, party_validator_view
 
 urlpatterns = [
     path('', home_view),
     path('admin/', admin.site.urls),
     path('login/', login_view),
     path('logout/', logout_view),
+    path('p/', party_validator_view),
     re_path(r'^p/(?P<party_name>[\w.@+-0123456789]+)/search$', search_view),
     path('signup/', signup_view),
     re_path(r'^p/(?P<party_name>[\w.@+-0123456789]+)$', party_view)

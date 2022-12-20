@@ -1,36 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 Welcome to {{ cleaned_party_name }}
-<form  method='GET' action='{{ party_name }}/search'>
+<form method='GET' action='{{ party_name }}/search'>
     <input type='text' name='query' placeholder='Search Songs'>
     <input type='submit' value='Search'>
 </form>
 
-<script>
-//websocket js
-
-var loc = window.location;
-var wsStart = 'ws://';
-if(loc.protocol == 'https:'){
-    wsStart = 'wss://';
-}
-var endpoint = wsStart + loc.host + loc.pathname;
-var socket = new WebSocket(endpoint);
-
-socket.onmessage = function(e){
-    console.log("message", e);
-    socket.send("{{ party_name }}");
-};
-socket.onopen = function(e){
-    console.log("open", e);
-};
-socket.onerror = function(e){
-    console.log("error", e);
-};
-socket.onclose = function(e){
-    socket.send("closing");
-    console.log("disconnect", e);
-};
-</script>
+<script type='text/javascript' src='{% static "websockets.js" %}'></script>
 {% endblock content%}

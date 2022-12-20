@@ -26,8 +26,13 @@ class ChatConsumer(AsyncConsumer):
 
     @database_sync_to_async
     def delete_party(self):
-        parties = Party.objects.get_queryset().filter(party_leader=self.scope['user'])
-        if parties.count() == 0:
+        party = Party.get_current_party(self.scope['user'])
+
+        if not party:
+            return
+        
+        if party.users.count() == 0:
+            party.delete()
             return
 
-        Party.objects.get(party_leader=self.scope['user']).delete()
+        party.remove_and_rearrange(self.scope['user'])

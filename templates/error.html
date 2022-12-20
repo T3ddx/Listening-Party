@@ -1,0 +1,12 @@
+{% load static %}
+
+{% if not_logged_in %}
+<h1>You're not logged in! Log in to access this page.</h1>
+{% elif not_in_party %}
+<h1>You're not in this party!</h1>
+{% elif no_party %}
+<h1>No party exists!</h1>
+{% endif %}
+<button class='logged_out_button' onclick='go_home()'>Home</button>
+
+<script type='text/javascript' src='{% static "Base/functions.js" %}'></script>
