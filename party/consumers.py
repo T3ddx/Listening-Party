@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 from django.contrib.auth import get_user_model, get_user
 from channels.consumer import AsyncConsumer
 from channels.db import database_sync_to_async
@@ -21,18 +22,19 @@ class ChatConsumer(AsyncConsumer):
         print("recieve", event)
 
     async def websocket_disconnect(self, event):
-        await self.delete_party()
+        await self.remove_user()
         print("disconnect", event)
 
     @database_sync_to_async
-    def delete_party(self):
+    def remove_user(self):
         party = Party.get_current_party(self.scope['user'])
 
         if not party:
             return
-        
+
         if party.users.count() == 0:
             party.delete()
             return
 
         party.remove_and_rearrange(self.scope['user'])
+

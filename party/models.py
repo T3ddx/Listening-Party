@@ -36,7 +36,15 @@ class Party(models.Model):
         return False
 
     def remove_and_rearrange(self, user):
-        pass
+        if self.is_party_leader(user):
+            next_leader = list(self.users.all())[0]
+            self.party_leader = next_leader
+            self.users.remove(next_leader)
+        else:
+            self.users.remove(user)
+        
+        self.save()
+        
 
     @staticmethod
     def get_current_party(user):
