@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Party, Party_Invite
+from .models import Party, Party_Invite, Party_Member
 # Register your models here.
 class PartyInviteAdmin(admin.ModelAdmin):
     model = Party_Invite
@@ -23,5 +23,9 @@ class PartyAdmin(admin.ModelAdmin):
 
     list_display = ['name', 'party_leader']
 
+class Party_MemberAdmin(admin.ModelAdmin):
+    list_display = ['user', 'in_party']
+
 admin.site.register(Party, PartyAdmin)
 admin.site.register(Party_Invite, PartyInviteAdmin)
+admin.site.register(Party_Member, Party_MemberAdmin)

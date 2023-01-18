@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from home.functions import handling_friends, friend_profile
-from .models import Party, Party_Invite
+from .models import Party, Party_Invite, Party_Member
 from login.models import Users
 from .functions import user_invite_info, create_party, party_info
 # Create your views here.
@@ -27,7 +27,6 @@ def party_view(request, party_name=None):
 
         #if the user accessing is a leader
         if party.is_party_leader(request.user):
-            context = {}
             #creates a party name with spaces
             party_name_cleaned = party_name.replace('-', ' ')
 
@@ -47,13 +46,12 @@ def party_view(request, party_name=None):
             user_invite_info(request,context)
             party_info(request, context)
 
-            #if request.method == 'POST':
-                #handling_parties(request, context)
+            if request.method == 'POST':
+                handling_parties(request, context)
                 
             return render(request, 'party_template.html', context)
         #if the user accessing is a member
         elif party.is_member(request.user):
-            context = {}
             #creates a party name with spaces
             party_name_cleaned = party_name.replace('-', ' ')
 
@@ -83,23 +81,28 @@ def party_view(request, party_name=None):
 def party_leader_function(request, context):
     pass
 
-#checks if the user is in the party
-def validate_party(request, party_name):
-    pass
-
 #handles the POST requests
 def handling_parties(request, context):
     if request.POST.get('party_invite'):
         inviting_friends(request, context)
-    if request.POST.get('removing_member'):
+    if request.POST.get('delete_member'):
         remove_member(request, context)
-    if request.POST.get('remove_invite'):
+    if request.POST.get('delete_invite'):
         remove_invite(request, context)
-
+    
 #invites a user to the party
 def inviting_friends(request, context):
     invited_username = request.POST.get('party_invite')
-    invited_user = Users.objects.get(username=invited_username)
+    #checks if the username is associated with a user
+    try:
+        invited_user = Users.objects.get(username=invited_username)
+    except:
+        context['no_user'] = True
+        return
+
+    #creates a party invite object
+    party_member_profile = Party_Invite.objects.create(party_name=context['party_name'], invited=invited_user, inviter=request.user)
+    party_member_profile.save()
 
 #removes a member from a party
 def remove_member(request, context):
@@ -107,4 +110,9 @@ def remove_member(request, context):
 
 #removes an invite from a party
 def remove_invite(request, context):
-    pass
+    context['in_party_menu'] = True
+    
+    invited_user = Users.objects.get(username=request.POST.get('delete_invite'))
+
+    Party_Invite.delete_invite(request.user, invited_user)
+

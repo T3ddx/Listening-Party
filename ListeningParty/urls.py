@@ -21,10 +21,12 @@ from home.views import home_view
 from login.views import login_view, logout_view, signup_view
 from search.views import search_view
 from party.views import party_view, party_validator_view
+from partyrefresh.views import get_party_info
 
 urlpatterns = [
     path('', home_view),
     path('admin/', admin.site.urls),
+    path('retrievedata/', get_party_info),
     path('login/', login_view),
     path('logout/', logout_view),
     path('p/', party_validator_view),

@@ -1,18 +1,28 @@
 var audio;
 var source_playing;
-var invalid_url_symbols = [" ", "%", "'", "\"", "?", "|", "\\", "-", "!", "#", "$", "^", "&", "*", "(", ")", "<", ">", ".", ";", ":", "=", "{", "[", "]", "}", "`", "~"];
+var invalid_url_symbols = ["%", "'", "\"", "?", "|", "\\", "-", "!", "#", "$", "^", "&", "*", "(", ")", "<", ">", ".", ";", ":", "=", "{", "[", "]", "}", "`", "~"];
 const party_form = document.getElementById("party_form");
 
 if(party_form){
     party_form.addEventListener("submit", function(event){
         clearPartyErrors();
 
-        party_name = $("#party_name").val();
+        var submited_data = $("#party_name")
+
+        var party_name = submited_data.val();
         
         if(!checkURL(party_name)){
             event.preventDefault();
+        } else {
+            event.preventDefault();
+            submited_data.val(submited_data.val().split(" ").join("-"));
+            party_form.submit();
         }
     });
+}
+
+function joinParty(party_name){
+    window.location.pathname = "/p/" + party_name;
 }
 
 function go_home(){
@@ -37,6 +47,8 @@ function playAudio(source){
 }
 
 function friendButton(){
+    $("#friends_child").load(" #friends_child");
+
     var friend_div = $("#friends_list");
     var party_div = $("#party_list");
 
@@ -49,13 +61,35 @@ function friendButton(){
     } else {
         friend_div.css("display", "none");
     }
-    
+
     clearPartyErrors();
     clearPartyInput();
     clearFriendErrors();
 }
 
 function partyButton(){
+    //$("#party_child").load("#party_child");
+
+    var xml = new XMLHttpRequest();
+    xml.onreadystatechange = function(){
+        if(xml.readyState == 4 && xml.status == 200){
+            //document.getElementById('party_list').innerHTML = xml.responseText
+            $("#party_list").html(xml.responseText);
+        }
+    };
+
+    //has to be get
+    //works
+    //change shit
+    //made a new app speficially for this
+    //use its views to return shit
+    if(window.location.pathname == "/"){
+        xml.open("get", "retrievedata/", true);
+    } else {
+        xml.open("get", "retrievedata/?party=true", true);
+    }
+    xml.send();
+
     var party_div = $("#party_list");
     var friend_div = $("#friends_list");
 
@@ -77,7 +111,7 @@ function partyButton(){
 
 function createParty(){
     var input = $("#party_name");
-    if(input.val() != "" && checkURL(input.val())){
+    if(checkURL(input.val())){
         var res = input.val().replace(" ", "-");
         window.location.pathname = 'p/' + res;
     }
@@ -85,7 +119,8 @@ function createParty(){
 
 function checkURL(url){
     var party_sym_error = $("#party_sym_error");
-    var party_len_error = $("#party_len_error")
+    var party_len_error = $("#party_len_error");
+    var valid = true;
     party_sym_error.html("Not a valid party name. Cannot include these symbols: ");
     party_len_error.html("Party name must not be over 50 characters.");
 
@@ -102,11 +137,11 @@ function checkURL(url){
         if(url.includes(invalid_url_symbols[i])){
             party_sym_error.html(party_sym_error.html() + invalid_url_symbols[i]);
             party_sym_error.css("display", "block"); 
-            return false;
+            valid = false;
         }
     }
 
-    return true;
+    return valid;
 }
 
 function clearPartyErrors(){
@@ -138,9 +173,3 @@ function clearPartyInput(){
         input.val("");
     }
 }
-
-/*document.getElementById("party_list").addEventListener("keypress", function(e) {
-    if(e.key == "Enter"){
-        createParty();
-    }
-});*/

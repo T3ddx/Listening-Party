@@ -10,8 +10,9 @@
         <h1>Hello {{ request.user.username }}!</h1>
 
         <div id='top_bar'>
+            <div></div>
             <div class='btn_lists' id='party'>
-                <button class='logged_in_button' onclick='partyButton()'>Party</button>
+                <button onclick='partyButton()' class='logged_in_button'>Party</button>
                 {% if not in_party %}
                 <div class='lists' id='party_list'>
                     Create a Party:
@@ -20,48 +21,47 @@
                         <input type='text' id='party_name' name='party_name' placeholder='enter party name' autocomplete='off'>
                         <button id='input_button' type='submit'>+</button>
                     </form>
-                    <!-- <input id='party_name' type='text' placeholder='enter party name'>
-                    <button id='input_button' onclick='createParty()'>+</button><br>-->
                     <p1 id='party_sym_error' class='error_message' style='display:none;'>Not a valid party name. Cannot include these symbols: </p1>
                     <p1 id='party_len_error' class='error_message' style='display:none;'>Party name must not be over 50 characters.</p1>
                     {% if invites.count is not 0 %}
                     <br>Invites:<br>
                     {% for invite in invites %}
-                    {{ invite.party_name }} | {{ invite.inviter }}<button class='list_buttons'>join</button>
+                    <form method='post' action='p/{{ invite.party_name }}'>
+                        {% csrf_token %}
+                        {{ invite.party_name }} | {{ invite.inviter }}<button type='submit' name='party_join' value='{{ invite.party_name }}' class='list_buttons'>join</button>
+                    </form>
                     {% endfor %}
                     {% endif %}
                 </div>
                 {% else %}
-                <div class='lists' id='party_list'>
-                    <form method='post' action=''>
-                        {% csrf_token %}
-                        <input id='party_invite' name='party_invite' type='text' placeholder='invite users'>
-                        <input type='submit' value='invite'>
-                        <p1 id='party_invite_error' class='error_message' style='display:none;'>User does not exist.</p1>
-                        <p1 id='already_in_party_error' class='error_message' style='display:none;'>User already in this party</p1>
-                    </form>
-                    {% if party_members.count is not 0 %}
-                    Members:
-                    {% for member in party_members %}
-                    {{ member.username }}<button type='submit' name='delete_member' value='{{ memeber }}' class='list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button>
-                    {% endfor %}
-                    {% else %}
-                    No party members
-                    {% endif %}
+                <div class='lists' id='party_list' {% if in_party_menu %} style='display:block;' {% else %} style='display:none;' {% endif %}>
+                    <div id='party_child'>
+                        {% if party_members.count is not 0 %}
+                        Members:
+                        {% for member in party_members %}
+                        {{ member.get_name }}<button type='submit' name='delete_member' value='{{ memeber }}' class='list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button>
+                        {% endfor %}
+                        {% else %}
+                            Invite Friends to the Party!
+                        {% endif %}
 
-                    {% if invited_members.count is not 0 %}
-                    <br>Sent Invites:<br>
-                    {% for invite in invited_members %}
-                    {{ invite.invited }}<button type='submit' name='delete_invite' value='{{ member }}' class='list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button>
-                    {% endfor %}
-                    {% endif %}
+                        {% if invited_members.count is not 0 %}
+                        <br>Sent Invites:<br>
+                        {% for invite in invited_members %}
+                        <form method='post'>
+                            {% csrf_token %}
+                            {{ invite.invited }}<button type='submit' name='delete_invite' value='{{ invite.invited }}' class='list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button>
+                        </form>
+                        {% endfor %}
+                        {% endif %}
 
-                    {% if invites.count is not 0 %}
-                    <br>Your Invites:<br>
-                    {% for invite in invites %}
-                    {{ invite.party_name }} | {{ invite.inviter }}<button class='list_buttons'>join</button>
-                    {% endfor %}
-                    {% endif %}
+                        {% if invites.count is not 0 %}
+                        <br>Your Invites:<br>
+                        {% for invite in invites %}
+                        {{ invite.party_name }} | {{ invite.inviter }}<button class='list_buttons'>join</button>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
             </div>
@@ -69,53 +69,59 @@
             <div class='btn_lists' id='friends'>
                 <button class='logged_in_button' onclick='friendButton()'>Friends</button>
                 <div {% if in_friends %} style='display:block;' {% else %} style='display:none;' {% endif %} class='lists' name='friends_list' id='friends_list'>
-                    {% if FriendProfile.friends.count is 0 %}
-                    No Friends<br>
-                    {% else %}
-                    Friends:<br>
-                    {% for user in FriendProfile.friends.all %}
-                    <form action='' method='post'>
-                        {% csrf_token %}
-                        {{ user }}<button type='submit' name='delete' value='{{ user }}' class='list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button><br>
-                    </form>
-                    {% endfor %}
-                    {% endif %}
+                    <div id='friends_child'>
+                        {% if FriendProfile.friends.count is 0 %}
+                        No Friends<br>
+                        {% else %}
+                        Friends:<br>
+                        {% for user in FriendProfile.friends.all %}
+                        <form action='' method='post'>
+                            {% csrf_token %}
+                            {{ user }}
+                            {% if not in_party %}
+                                <button type='submit' name='delete' value='{{ user }}' class='list_buttons' style="border:none;background-color:transparent;height:10px;"><img src='{% static "Music/images/x.png" %}' width='15px'></button><br>
+                            {% else %}
+                                <button type='submit' name='party_invite' value='{{ user }}' class='list_buttons'>invite</button>
+                            {% endif %}
+                        </form>
+                        {% endfor %}
+                        {% endif %}
+                        {% if FriendProfile.get_to_requests.count is not 0 %}
+                        Friend Requests:<br>
+                        {% for request in FriendProfile.get_to_requests %}
+                        <form method='post'>
+                            {% csrf_token %}
+                            {{ request.from_request }}<button class='list_buttons' type='submit' name='accept' value='{{ request.from_request }}'>accept</button><br>
+                        </form>
+                        {% endfor %}
+                        {% endif %}
 
-                    {% if FriendProfile.get_to_requests.count is not 0 %}
-                    Friend Requests:<br>
-                    {% for request in FriendProfile.get_to_requests %}
-                    <form method='post'>
-                        {% csrf_token %}
-                        {{ request.from_request }}<button class='list_buttons' type='submit' name='accept' value='{{ request.from_request }}'>accept</button><br>
-                    </form>
-                    {% endfor %}
-                    {% endif %}
+                        {% if FriendProfile.get_sent_requests.count is not 0 %}
+                        Sent Requests:<br>
+                        {% for request in FriendProfile.get_sent_requests %}
+                        <form method='post'>
+                            {% csrf_token %}
+                            {{ request.to_request }}<button class='list_buttons' type='input' name='cancel' value='{{ request.to_request }}'>cancel</button><br>
+                        </form>
+                        {% endfor %}
+                        {% endif %}
 
-                    {% if FriendProfile.get_sent_requests.count is not 0 %}
-                    Sent Requests:<br>
-                    {% for request in FriendProfile.get_sent_requests %}
-                    <form method='post'>
-                        {% csrf_token %}
-                        {{ request.to_request }}<button class='list_buttons' type='input' name='cancel' value='{{ request.to_request }}'>cancel</button><br>
-                    </form>
-                    {% endfor %}
-                    {% endif %}
-
-                    <form action='' method='post'>
-                        {% csrf_token %}
-                        <br>Add friends:
-                        <input type='text' name='send_request' placeholder='enter a username: '>
-                        <input class='input_button' type='submit' value='+'>
-                    </form>
-                    {% if cant_find_user %}
-                    <p1 id='user_does_not_exist' class='error_message' >User does not exist</p1>
-                    {% endif %}
-                    {% if already_friends %}
-                    <p1 id='already_friends' class='error_message' >Already friends with user</p1>
-                    {% endif %}
-                    {% if already_sent_request %}
-                    <p1 id='already_sent' class='error_message' >Already sent a friend request to user</p1>
-                    {% endif %}
+                        <form action='' method='post'>
+                            {% csrf_token %}
+                            <br>Add friends:
+                            <input type='text' name='send_request' placeholder='enter a username: '>
+                            <input class='input_button' type='submit' value='+'>
+                        </form>
+                        {% if cant_find_user %}
+                        <p1 id='user_does_not_exist' class='error_message' >User does not exist</p1>
+                        {% endif %}
+                        {% if already_friends %}
+                        <p1 id='already_friends' class='error_message' >Already friends with user</p1>
+                        {% endif %}
+                        {% if already_sent_request %}
+                        <p1 id='already_sent' class='error_message' >Already sent a friend request to user</p1>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
